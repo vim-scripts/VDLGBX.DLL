@@ -1,0 +1,16 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=755
+
+Allows to compose and use arbitrary dialog boxes within your scripts.
+Features:
+* simple textfield
+* password-field
+* checkboxes
+* listboxes
+* comboboxes
+
+HTML-authoring-support:
+Create an <IMG SRC="xxx" WIDTH="nnn" HEIGHT="nnn"/>-Tag out from simple the filename
+Translate foreign chars to HTML-entities (eg. ä -> &aauml;)
+
+Color-choosing
+Allows to choose a color (using the standard windows-dialog) and returns the RGB-values in whatever format you want (so far an arbitrary printf-formatstring can do it...)
