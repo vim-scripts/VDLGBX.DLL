@@ -1,4 +1,4 @@
-"if(!exists("*s:RunTest"))
+if(!exists("*s:RunTest"))
 
 let s:Lnum=0
 
@@ -24,36 +24,22 @@ exec ":n " . VDLGBX_testfil
 "  name is the suffix of the returned VDLGBX_var
 "  label (optional) is the prompt (default: the name)
 "  content is default-text, listbox-entries etc. depending on x (see below)
-"
-" ************* $E: Simple Textfield (Editfield)
 let Param="$E:SomeInput=\"Foo\"\n" . 
-      \"$E:a2:Another Input=\\Bar\\\n" 
+      \"$E:a2:Some arbitrary text=\\Bar\\\n" 
 "$E:name:Label=Default
-" Enter an arbitrary text. Note the resulting quoting of " and \ if you have
-" entered them!
-"
-" ************* $S: Checkbox (Switch)
+" Enter an arbitrary text. Note the resulting quoting of " and \ !
 let Param=Param."$S:q1:Deactivate this switch=1\n" .
       \"$S:q2:Activate this switch=0\n" 
 "$S:name:Label=Default
 " A switch. Any default not equal to 0 does pre-activate. Returns 0 or 1
-"
-" ************* $L: Listbox (Choose one, cannot change, but translate)
 let Param=Param."$L:List1:Choose one=/1=Eins/22=Zwei/_333=Drei/4444=Vier/Viel=Und noch mehr/\n" 
 "$L:name:Label=/ret1=choose1/_default/../choosex/
 " A Listbox with predefined, unchangeable entries. You con preselect an entry
 " by "_" and translate your return by "="
-"
-" ************* $C: Combox (Choose one, or enter something)
 let Param=Param."$C:List2:Choose or enter something other=/AAA/_BBB/CCC/DDD/EEE/\n"
 "$C:name:Label=/text1/_default2/../Textn/
 " A Combobox with predefined and preselectable entries, but you cannot
 " translate the return and the user can enter arbitrary text.
-"
-" ************* $P: Password (like Edit, but don't display)
-let Param=Param."$P:Secret:Enter your secret password=\n"
-"
-" ------------- Now let's do it
 let Z1=libcall("VDLGBX","BOX",Param)
 " Z1 contains a executable chain of "let VDLGBX_xxx=yyy".
 " The first statement ever is "let VDLGBXRETURN=xxx", where xxx is "OK",
@@ -84,17 +70,16 @@ call s:ADD("The 2nd string was: ".VDLGBX_a2)
 call s:ADD("The switche were: ".VDLGBX_q1." and ".VDLGBX_q2)
 call s:ADD("The 1st choosing: ".VDLGBX_List1)
 call s:ADD("The 2nd choosing: ".VDLGBX_List2)
-call s:ADD("The Password was: ".VDLGBX_Secret)
 
-" =================  IMAGE and Configurations:
+" Now the goodies...
 " !TITLE=new title of the dialogbox
 " !FONT="fontname",points   
 " !PREF=prefix    replaces l:VDLGBX_ (usefull if you want to have some sets of
 " entered values)
-let Param="!TITLE=IMAGE-Facility\n" .
+let Param="!TITLE=Now let's rock...\n" .
       \"!FONT=\"Arial\",8\n" .
       \"!PREF=l:MYfooBAR_\n" .
-      \"$E:image:Complete path to some image (GIF,JPG,PNG,BMP)=vim_header.gif\n"
+      \"$E:image:Complete path to some image (GIF,JPG,PNG,BMP)=\n"
 let Z1=libcall("VDLGBX","BOX",Param)
 exec Z1
 if(VDLGBXRETURN!="OK")
@@ -110,29 +95,20 @@ if(strpart(Z2,0,3)!="*NO")
 else
   call s:ADD("The file \"".MYfooBAR_image."\" returned ".Z2)
 endif
+call s:ADD('')
 
-" ================== HTML/XML-Support
-let Param="!TITLE=HTML-Wizard\n" .
-      \"$E:string:Some HTML-Text=Hérè âre <the úglü> Letterß\n" 
-let Z1=libcall("VDLGBX","BOX",Param)
-exec Z1
-if(VDLGBXRETURN!="OK")
-  echo VDLGBXRETURN
-  return
-endif
-let Z1=libcall("VDLGBX","HTMLS",VDLGBX_string)
-" Note that only chars outside tags are translated!
-" (most useful within a script:
-" 1) yank your text
-" 2) translate it
-" 3) put it back)
-" Example:
-" map <somekey) "xx"=libcall("VDLGBX","HTMLS",@x)<Cr>P
-call s:ADD("")
-call s:ADD("*** smart HTML-Translate ***")
-call s:ADD('Original was:"' . VDLGBX_string . '"')
-call s:ADD('Translated  :"' . Z1 . '"')
+" Function HTMLS translates some special characters to HTM-entities
+let Z2="Some specials: ä--ö--ü--Ä--Ö--Ü--é--È--ó--ò--Ù"
+call s:ADD('Before:'.Z2)
+call s:ADD('After :'.libcall('VDLGBX','HTMLS',Z2))
+call s:ADD('')
+
+" Function COLOR returns a RGB-Color in whatever c-printf-format you like (default: '%3u,%3u,%3u')
+call s:ADD('Default COLOR:'.libcall('VDLGBX','COLOR',''))
+call s:ADD('Color for HTM:'.libcall('VDLGBX','COLOR','#%02X%02X%02X'))
+call s:ADD('Arbitrary color:'.libcall('VDLGBX','COLOR',"Red=%i, Blue=X'%02X', Green=%05u!"))
 :endfun
-":endif
+
+:endif
 
 call s:RunTest()
